@@ -52,14 +52,17 @@ class Domain
     headers 'Authorization': "Bearer #{DIGITALOCEAN_TOKEN}"
 
     def self.set_data(domain, record_id, data)
-      put("https://api.digitalocean.com/v2/domains/#{domain}/records/#{record_id}", body: {data: data})
+      put(ENTITY_URL % {domain: domain, record_id: record_id}, body: {data: data})
     end
 
     def self.domain_records(domain)
-      res = get("https://api.digitalocean.com/v2/domains/#{domain}/records")
+      res = get(BASE_URL % {domain: domain})
       raise StandardError, res.fetch("message") unless res.has_key?("domain_records")
       res.fetch("domain_records")
     end
+
+    BASE_URL = "https://api.digitalocean.com/v2/domains/%{domain}/records".freeze
+    ENTITY_URL = BASE_URL + "/%{record_id}".freeze
   end
 end
 
